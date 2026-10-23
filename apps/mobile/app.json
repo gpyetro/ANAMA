@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "ANAMÃ",
+    "slug": "anama",
+    "scheme": "anama",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "br.com.anama.academico",
+      "usesCleartextTraffic": true
+    },
+    "ios": {
+      "bundleIdentifier": "br.com.anama.academico",
+      "supportsTablet": true
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-status-bar"
+    ],
+    "extra": {
+      "projectMode": "ACADEMICO_SIMULADO"
+    }
+  }
+}

@@ -1,0 +1,2 @@
+export declare function haversineKm(a: {latitude:number;longitude:number}, b:{latitude:number;longitude:number}): number;
+export declare function planRoute(origin:{latitude:number;longitude:number}, stops: {idEntrega:number;codigoFamilia:string;latitude:number;longitude:number}[]): {paradas: {idEntrega:number;codigoFamilia:string;latitude:number;longitude:number;distanciaTrechoKm:number}[];distanciaEstimadaKm:number;metodo:string};

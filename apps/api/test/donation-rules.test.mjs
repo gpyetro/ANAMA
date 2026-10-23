@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { toCents, fromCents, calculateItemCents, remainingCents, nextDeliveryStatus } from '../src/shared/domain/donation-math.mjs';
+test('money arithmetic uses integer cents', () => { assert.equal(toCents(0.1)+toCents(0.2), 30); assert.equal(fromCents(30), 0.3); assert.equal(remainingCents(100, 99.90), 10); });
+test('invalid monetary values are rejected', () => { for(const n of [0,-1,NaN,Infinity,0.001]) assert.throws(()=>toCents(n)); });
+test('item quantities and duplicates are validated', () => { const catalog=[{idItem:1,valorMedio:7,quantidadeNecessaria:5,quantidadeArrecadada:2}]; assert.equal(calculateItemCents([{idItem:1,quantidade:2}],catalog),1400); assert.throws(()=>calculateItemCents([{idItem:1,quantidade:4}],catalog)); assert.throws(()=>calculateItemCents([{idItem:1,quantidade:1},{idItem:1,quantidade:1}],catalog)); });
+test('delivery status only advances forward', () => { assert.equal(nextDeliveryStatus('PENDENTE','EM_ROTA'),true);assert.equal(nextDeliveryStatus('EM_ROTA','ENTREGUE'),true);assert.equal(nextDeliveryStatus('ENTREGUE','PENDENTE'),false);assert.equal(nextDeliveryStatus('PENDENTE','ENTREGUE'),false); });
+import { haversineKm, planRoute } from '../src/shared/domain/route-math.mjs';
+test('route keeps stops without duplicating and starts closest', ()=> { const r=planRoute({latitude:0,longitude:0},[{idEntrega:1,latitude:0,longitude:2,codigoFamilia:'A'},{idEntrega:2,latitude:0,longitude:1,codigoFamilia:'B'}]);assert.deepEqual(r.paradas.map(x=>x.idEntrega),[2,1]);assert.ok(r.distanciaEstimadaKm>200); });
+test('haversine returns zero for same location', ()=>assert.equal(haversineKm({latitude:-23.5,longitude:-46.5},{latitude:-23.5,longitude:-46.5}),0));
