@@ -1,122 +1,131 @@
-# ANAMÃ — plataforma solidária (protótipo acadêmico)
+# ANAMÃ — Plataforma digital de doações fracionadas
 
-Base de código preservada do projeto da equipe ANAMÃ (repositório de origem: https://github.com/velosopedro/anama, commit `3475d73`). Esta cópia adiciona módulos de doação fracionada, pagamento **exclusivamente simulado**, estoque, acompanhamento de entregas, notificações, painel web e aplicativo mobile Expo. Créditos do grupo original mantidos.
+**Projeto acadêmico — TCC do curso Técnico em Desenvolvimento de Sistemas, ETEC Zona Leste (2026).**
 
-**IMPORTANTE — estado de validação:** o código foi ampliado e as regras puras possuem testes automáticos; a instalação de pacotes, o build completo, o banco PostgreSQL em funcionamento e a aplicação mobile em dispositivo real **não puderam ser executados neste ambiente**, por indisponibilidade de acesso ao registro do npm e ausência de um servidor PostgreSQL. O grupo precisa executar os comandos abaixo e corrigir eventuais incompatibilidades antes de apresentar o sistema como homologado. Não há gateway financeiro real, nem cobrança de usuários.
+O ANAMÃ é um protótipo que integra uma aplicação web, um aplicativo móvel e uma API para apoiar doações fracionadas de cestas básicas, a gestão demonstrativa de organizações parceiras e o acompanhamento de solicitações de auxílio.
 
-## Pré-requisitos
+> **Atenção:** pagamentos e entregas são **simulados** no protótipo. A aplicação **não cobra dinheiro**, não comprova entregas físicas e **não deve ser exposta publicamente sem adequações de segurança e privacidade**.
 
-- Node.js **22.13+**, npm e PostgreSQL (instância local, com banco e usuário próprios para testes).
-- No celular: **Expo Go** compatível com Expo SDK **57**, ou ambiente Android configurado para rodar a aplicação.
-- PC e celular na mesma rede local; nunca use a senha do banco ou a chave JWT em repositório público.
+## Equipe e origem do projeto
 
-## 1 — Instalação (Windows PowerShell)
+- Enzo de Lima Lombardi
+- Pedro Henrique Amaro Rodrigues
+- Pedro Moraes Veloso
+- Pyetro Gabriel Cordeiro Felizardo
+- Orientação: Prof. Marcelo Collado — ETEC Zona Leste
 
-Abra a pasta `anama` no VS Code. No terminal PowerShell, a partir da raiz:
+O código foi desenvolvido pelo grupo e contém evolução da base versionada no repositório original da equipe, `velosopedro/anama` (commit `3475d73`), com módulos adicionais e ajustes realizados durante os ensaios acadêmicos.
 
-```powershell
-node -v
-npm -v
-npm install
+## Estrutura
+
+```text
+apps/
+  api/       API REST em Node.js, Express, TypeScript, Prisma e PostgreSQL
+  web/       Interface web em React, TypeScript e Vite
+  mobile/    Aplicativo React Native com Expo SDK 58
+scripts/     Rotinas de verificação integrada
 ```
 
-O comando `npm install` cria um `package-lock.json` novo, coerente com o app Expo acrescentado. **Não use `npm ci` na primeira instalação desta cópia.** Depois de instalar e testar, salve o novo lockfile no Git.
+O repositório usa **npm workspaces**. A branch principal é `main`.
 
-## 2 — Configurar API e banco
+## Funcionalidades implementadas no protótipo
 
-1. Crie um banco PostgreSQL vazio e um usuário com permissão nesse banco. Exemplo ilustrativo de nome: `anama_dev`.
-2. Copie `apps/api/.env.example` para `apps/api/.env`.
-3. Edite somente o arquivo privado `.env` com `DATABASE_URL` válido, `JWT_SECRET` aleatório com pelo menos 32 caracteres, `ENCRYPTION_KEY` distinto com pelo menos 32 caracteres e `CORS_ORIGIN=http://localhost:5173`.
-4. Defina `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` e `DEMO_PASSWORD` somente nesse `.env`. Nunca compartilhe as credenciais.
-5. No terminal execute:
+- Cadastro e autenticação por perfil (doador, família, ONG e administrador).
+- Solicitação e acompanhamento de cestas básicas por famílias.
+- Doações por valor ou item, com confirmação ou recusa **simulada** em ambiente de desenvolvimento.
+- Atualização do progresso da cesta após confirmação simulada; prevenção de contribuições acima da meta.
+- Homologação de ONGs, vinculação de cestas, indicadores de acompanhamento e controle demonstrativo de estoque.
+- Agendamento e acompanhamento de entregas por estados (`PENDENTE`, `EM_ROTA`, `ENTREGUE`), sem comprovação de entrega física.
+- Notificações armazenadas no PostgreSQL.
+- Atualização da interface web por Server-Sent Events (SSE), com consulta periódica alternativa.
+- Prévia **aproximada** da ordem de paradas por distância Haversine e heurística do vizinho mais próximo; **não** é um mapa rodoviário.
 
-```powershell
-cd apps/api
-npx prisma generate --config prisma7.config.ts
-npx prisma migrate deploy --config prisma7.config.ts
-npm run db:seed
-npm run db:demo
-cd ../..
-```
+## Requisitos do ambiente de desenvolvimento
 
-A segunda migração adiciona o vínculo da cesta com a ONG. Os dados de demonstração têm contas **somente para uso local**: altere qualquer senha de exemplo antes de expor o sistema em rede compartilhada.
+- Windows com Node.js e npm compatíveis com as dependências do projeto.
+- PostgreSQL local (os ensaios da equipe foram feitos com PostgreSQL 17).
+- Visual Studio Code e Git.
+- Expo Go no celular compatível com o **Expo SDK 58**, para os testes do aplicativo mobile.
+- Computador e celular na mesma rede local durante os ensaios no dispositivo físico.
 
-## 3 — Iniciar API e site
+## Configuração inicial (PowerShell)
 
-Abra dois terminais na raiz:
-
-```powershell
-# Terminal 1
-npm run dev:api
-```
+Na raiz do projeto:
 
 ```powershell
-# Terminal 2
-npm run dev:web
+npm.cmd install
+Copy-Item apps/api/.env.example apps/api/.env
+Copy-Item apps/web/.env.example apps/web/.env
+Copy-Item apps/mobile/.env.example apps/mobile/.env
 ```
 
-A API usa `http://localhost:3333/health` e o site usa `http://localhost:5173`, por padrão. No site, crie uma conta de família, doador e ONG. Para usar a ONG, entre como ADMIN e aprove o cadastro. A partir daí, solicite uma cesta, abra como doador e realize contribuição pelo **simulador**, nunca com dinheiro verdadeiro.
+Edite **apenas os arquivos `.env` locais**, que são ignorados pelo Git. Em `apps/api/.env`, configure credenciais próprias do banco de **teste**, `JWT_SECRET`, `ENCRYPTION_KEY` e senhas das contas de demonstração. **Nunca envie senhas, tokens, dados de famílias ou `.env` reais para o GitHub.**
 
-## 4 — App mobile Expo
+No arquivo `apps/mobile/.env`, ajuste `EXPO_PUBLIC_API_URL` para o IP da máquina na rede local. `localhost` não aponta para o computador quando o aplicativo é executado num celular físico.
 
-1. Copie `apps/mobile/.env.example` para `apps/mobile/.env`.
-2. Se usar **emulador Android**, configure `EXPO_PUBLIC_API_URL=http://10.0.2.2:3333/api/v1`.
-3. Se usar **celular físico**, substitua por `http://IP_DO_SEU_NOTBOOK_NA_REDE:3333/api/v1` e permita a conexão no firewall local somente na rede confiável.
-4. Execute na raiz:
+Prepare o banco PostgreSQL e, a partir da raiz, execute:
 
 ```powershell
-npm run dev:mobile
+npm.cmd run db:generate
+npm.cmd run db:migrate
+npm.cmd run db:seed
+npm.cmd run db:demo
 ```
 
-A tela de login, solicitação de auxílio, doação simulada, listagem, estoque da ONG, notificações e atualização de entrega estão no aplicativo. O agendamento de nova entrega e a rota completa são geridos pela versão web da ONG.
+O nome da base e as credenciais são configurados pela variável privada `DATABASE_URL`; o repositório não inclui banco com dados reais.
 
-**Expo SDK 57:** React Native 0.86, React 19.2.3, Node.js 22.13+. Documentação: https://docs.expo.dev/versions/v57.0.0/ . A versão do Expo Go instalada deve ser compatível.
+## Executar
 
-## 5 — Testes
+Abra terminais independentes na raiz do projeto:
 
 ```powershell
-npm run test:rules
-npm run build:api
-npm run build:web
+npm.cmd run dev:api
 ```
-
-Para o teste integrado, use apenas banco de teste descartável e os dados do admin configurados anteriormente. O script altera o banco, criando contas e doações **simuladas**:
 
 ```powershell
-$env:RUN_SMOKE_CONFIRM="1"
-$env:ADMIN_EMAIL="seu-admin-de-teste@example.test"
-$env:ADMIN_PASSWORD="sua-senha-local-de-teste"
-npm run test:smoke
+npm.cmd run dev:web
 ```
 
-**Atenção:** o script de smoke depende de API e PostgreSQL em execução; os testes de regras (`test:rules`) não dependem de banco.
+```powershell
+npm.cmd run dev:mobile
+```
 
-## Funcionalidades principais
+Endereços padrão de desenvolvimento:
 
-- API REST: autenticação com validação e senha hash; cadastro dos perfis; homologação de ONGs.
-- Família: solicitação e composição de cesta; armazenamento cifrado do endereço da família.
-- Doador: contribuição em item ou valor, transação pendente, aprovação/recusa simuladas, nova tentativa e progresso de cesta.
-- ONG: vinculação de cestas sem responsável, painel de indicadores, estoque físico, reserva automática na criação de entrega e mudança de status da entrega; planejamento aproximado por coordenadas com método do vizinho mais próximo.
-- Notificações persistentes e atualização de telas via Server-Sent Events (SSE) e polling de segurança.
-- Mobile: aplicativo Expo com perfis e operações centrais.
+- Saúde da API: `http://localhost:3333/health`
+- Web: `http://localhost:5173`
+- API REST: `http://localhost:3333/api/v1`
+- Mobile: QR Code apresentado pelo Expo CLI, com celular na mesma rede local.
 
-## Segurança e limites de escopo
+## Testes e verificações
 
-- **Não existe pagamento real.** `POST /api/v1/donations/:id/simulate-payment` só é habilitado quando `NODE_ENV != production`. Para uso externo seria obrigatório integrar gateway regulamentado e autenticar webhooks no servidor.
-- Em desenvolvimento local é utilizado HTTP. Para exposição na internet, configurar **HTTPS**, política de cookies/sessão segura, monitoramento, logs adequados, rate limits, proteção contra ataques web e gestão de segredos. A simples execução local não comprova conformidade integral à LGPD.
-- Endereços são protegidos com AES-256-GCM; não publique o `.env` ou coordenadas pessoais. A rota de planejamento de entregas devolve **distâncias aproximadas em linha reta**, não navegação rodoviária.
-- O servidor mantém progresso financeiro a partir apenas de pagamentos simulados aprovados e usa transação `Serializable` para evitar confirmar contribuições concorrentes acima da meta.
-- A conclusão do fluxo físico pressupõe abastecimento manual do estoque real no painel da ONG; não significa que produtos foram comprados ou entregues de verdade.
-- Ao documentar o TCC, use somente operações realmente reproduzidas pelo grupo e valide os dados antes de compartilhar capturas.
+```powershell
+npm.cmd run test:rules
+npm.cmd run build:api
+npm.cmd run build:web
+npm.cmd run typecheck --workspace=@anama/mobile
+Push-Location apps/mobile
+npx.cmd expo-doctor
+Pop-Location
+```
 
-## Organização
+**Observação:** os comandos são instruções de verificação, não garantia de que todos passaram nesta ou em outras máquinas. Os resultados devem ser registrados por quem executou os testes. Os ensaios acompanhados pela equipe incluíram autenticação, cestas, doações simuladas, sincronização entre web e iPhone, estoque, entregas demonstrativas e autorização por perfil.
 
-- `apps/api` — API Express/Prisma/PostgreSQL.
-- `apps/web` — frontend React/Vite.
-- `apps/mobile` — aplicativo React Native/Expo.
-- `apps/api/test` — testes de regras de negócio (Node test runner).
-- `scripts/smoke-api.mjs` — teste manual integrado, apenas com banco de testes.
+O teste integrado `npm.cmd run test:smoke` altera dados de um banco de testes. Leia `scripts/smoke-api.mjs` e execute **somente** em base descartável e com confirmação explícita; não execute em base real.
 
-## Próximas verificações antes da entrega escolar
+## Segurança, privacidade e limites
 
-Executar `npm install`, migrações, builds, testes e navegação real web/mobile; registrar os erros encontrados, corrigir eventuais incompatibilidades; conferir permissões, privacidade e consistência das doações. Integrar meio de pagamento verdadeiro somente se o projeto ultrapassar o escopo acadêmico e houver requisitos legais, operacionais e aprovação adequada.
+- **Não existe integração com instituição financeira, PIX, gateway real ou webhook de pagamento** neste protótipo.
+- O endpoint de simulação de pagamento só é habilitado em ambiente não produtivo.
+- O ambiente de desenvolvimento foi executado por HTTP local. Uma implantação externa exigiria HTTPS e revisão de autenticação, autorizações, dados pessoais, segredos e vulnerabilidades de dependências.
+- O projeto implementa proteções específicas (incluindo autenticação por perfil e cifragem de endereços armazenados), mas isso **não constitui certificação de conformidade integral à LGPD**.
+- Estados como `ENTREGUE` indicam a transição registrada no sistema de demonstração, não a comprovação de entrega física.
+- A prévia de rotas usa distâncias geográficas aproximadas, não itinerários viários reais.
+
+## Versionamento
+
+O repositório privado `gpyetro/ANAMA` foi iniciado na branch `main` com o commit `6b47d61`, que registra o protótipo web, a API e o aplicativo móvel. Novas alterações devem ser revisadas antes de `git add`, `git commit` e `git push`, com atenção especial a arquivos confidenciais.
+
+## Documentação do TCC
+
+A monografia da penúltima entrega apresenta referencial teórico, pesquisa de campo anonimizada, requisitos, diagramas UML, modelagem do banco, desenvolvimento, testes e limitações do protótipo. As evidências visuais devem retratar **apenas estados observados em execução**, sem representar pagamentos e entregas reais.
