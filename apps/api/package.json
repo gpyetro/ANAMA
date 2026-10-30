@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+"build": "tsc && node -e \"require('node:fs').cpSync('src/shared/domain', 'dist/shared/domain', { recursive: true })\"",
     "start": "node dist/server.js",
     "db:seed": "tsx src/database/seed.ts",
     "db:demo": "tsx src/database/demo-seed.ts",
