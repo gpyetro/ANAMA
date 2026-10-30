@@ -89,9 +89,23 @@ export function BasketDetailsPage() {
         <span className="status-badge">{basket.status === "EM_MONTAGEM" ? "Em montagem" : basket.status === "CONCLUIDA" ? "Concluída" : basket.status === "ENTREGUE" ? "Entregue" : basket.status}</span>
       </div>
 
-      {user?.tipo === "DOADOR" && basket.status === "EM_MONTAGEM" && (
-        <Link className="primary-link" to={`/donate/${basket.idCesta}`}>Contribuir com esta cesta</Link>
-      )}
+      {user?.tipo === "DOADOR" &&
+  basket.status === "EM_MONTAGEM" &&
+  import.meta.env.VITE_DEMO_MODE !== "true" && (
+    <Link className="primary-link" to={`/donate/${basket.idCesta}`}>
+      Contribuir com esta cesta
+    </Link>
+  )}
+
+{user?.tipo === "DOADOR" &&
+  basket.status === "EM_MONTAGEM" &&
+  import.meta.env.VITE_DEMO_MODE === "true" && (
+    <p role="note">
+      Ambiente acadêmico demonstrativo. As contribuições
+      financeiras estão indisponíveis nesta versão hospedada.
+      Nenhuma cobrança real é realizada.
+    </p>
+  )}
       <div className="basket-summary-card">
         <div className="summary-values">
           <div>

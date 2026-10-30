@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppLayout } from "./layouts/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -19,8 +19,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route element={<ProtectedRoute />}>
+<Route
+  path="/register"
+  element={
+    import.meta.env.VITE_DEMO_MODE === "true"
+      ? <Navigate to="/login" replace />
+      : <RegisterPage />
+  }
+/>      <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route index element={<HomePage />} />
 
@@ -34,7 +40,14 @@ export default function App() {
           />
 
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="donate/:id" element={<DonatePage />} />
+<Route
+  path="donate/:id"
+  element={
+    import.meta.env.VITE_DEMO_MODE === "true"
+      ? <Navigate to="/" replace />
+      : <DonatePage />
+  }
+/>
           <Route path="organization" element={<OrganizationDashboardPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
         </Route>

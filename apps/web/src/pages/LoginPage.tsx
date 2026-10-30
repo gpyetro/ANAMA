@@ -83,9 +83,12 @@ export function LoginPage() {
             {submitting ? "Entrando..." : "Entrar"}
           </button>
         </form>
-        <p className="auth-footer">
-          Ainda não possui uma conta? <Link to="/register">Criar conta</Link>
-        </p>
+        {import.meta.env.VITE_DEMO_MODE !== "true" && (
+  <p className="auth-footer">
+    Ainda não possui uma conta?{" "}
+    <Link to="/register">Criar conta</Link>
+  </p>
+)}
       </section>
     </main>
   );
