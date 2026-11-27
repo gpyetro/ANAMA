@@ -46,7 +46,11 @@ export function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <div className="brand-mark">ANAMÃ</div>
+        <img
+          className="auth-logo"
+          src="/logo-anama-completa.png"
+          alt="ANAMÃ — Doação de cestas básicas"
+        />
 
         <h1>Entrar</h1>
 

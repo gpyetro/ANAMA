@@ -22,6 +22,7 @@
   --brand-700: #127a31;
   --brand-800: #135f2b;
   --brand-900: #0f3d1e;
+  --logo-green: #1d5a37;
 
   /* Neutros */
   --ink: #13231a;
@@ -144,13 +145,14 @@ a {
   font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: var(--brand-700);
+  color: var(--logo-green);
 }
 
 .brand-logo {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   flex: none;
+  object-fit: contain;
 }
 
 .brand small {
@@ -344,15 +346,29 @@ a {
   font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: var(--brand-700);
+  color: var(--logo-green);
 }
 
 .brand-mark::before {
   content: "";
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  background: url("/favicon.svg") center / cover no-repeat;
+  width: 40px;
+  height: 40px;
+  background: url("/logo-anama.png") center / contain no-repeat;
+}
+
+.auth-logo {
+  display: block;
+  width: 180px;
+  height: auto;
+  margin: 0 auto 22px;
+}
+
+.auth-logo + h1 {
+  text-align: center;
+}
+
+.auth-logo ~ p:not(.form-error) {
+  text-align: center;
 }
 
 .auth-card h1 {
@@ -563,10 +579,18 @@ a {
   justify-content: space-between;
   gap: 24px;
 
+  min-height: 240px;
   border-radius: 24px;
+  /* Foto de fundo: substitua apps/web/public/hero-cestas.jpg para trocar a imagem */
   background:
-    radial-gradient(circle at 92% 0%, rgb(255 255 255 / 16%) 0, transparent 38%),
-    linear-gradient(135deg, var(--brand-600), var(--brand-800));
+    linear-gradient(
+      100deg,
+      rgb(13 58 31 / 94%) 0%,
+      rgb(18 110 48 / 84%) 48%,
+      rgb(22 148 58 / 45%) 100%
+    ),
+    url("/hero-cestas.jpg") center / cover no-repeat,
+    var(--brand-700);
   color: white;
   box-shadow: 0 14px 34px rgb(18 122 49 / 22%);
 }

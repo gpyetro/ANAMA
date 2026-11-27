@@ -73,7 +73,7 @@ export function AppLayout() {
     <div className="app-shell">
       <header className="app-header">
         <Link className="brand" to="/">
-          <img className="brand-logo" src="/favicon.svg" alt="" />
+          <img className="brand-logo" src="/logo-anama.png" alt="" />
           <span>
             ANAMÃ
             <small>Cestas Solidárias</small>
