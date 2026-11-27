@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { Alert, Pressable, RefreshControl, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Image, ImageBackground, Pressable, RefreshControl, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://10.0.2.2:3333/api/v1";
@@ -32,14 +32,16 @@ async function api<T>(path:string, token:string|null, method="GET", body?:unknow
   return data as T;
 }
 // Paleta compartilhada com a web (apps/web/src/styles/global.css).
-const C={brand:"#16943a",brandDark:"#127a31",brandDeep:"#0f3d1e",brand50:"#f0fbf2",brand100:"#dcf5e1",brand200:"#b6e9c2",ink:"#13231a",inkSoft:"#3b4d42",muted:"#66776c",line:"#e3ece6",lineStrong:"#cfdcd3",page:"#f3f8f4",surface:"#ffffff",surfaceSoft:"#f7fbf8",danger:"#c62828",dangerBg:"#fdeeee",warning:"#b45309",warningBg:"#fff6e5",info:"#2563eb",infoBg:"#ebf2ff"};
+const C={logo:"#1d5a37",brand:"#16943a",brandDark:"#127a31",brandDeep:"#0f3d1e",brand50:"#f0fbf2",brand100:"#dcf5e1",brand200:"#b6e9c2",ink:"#13231a",inkSoft:"#3b4d42",muted:"#66776c",line:"#e3ece6",lineStrong:"#cfdcd3",page:"#f3f8f4",surface:"#ffffff",surfaceSoft:"#f7fbf8",danger:"#c62828",dangerBg:"#fdeeee",warning:"#b45309",warningBg:"#fff6e5",info:"#2563eb",infoBg:"#ebf2ff"};
 const LABELS:Record<string,string>={EM_MONTAGEM:"Em montagem",CONCLUIDA:"Concluída",ENTREGUE:"Entregue",PENDENTE:"Pendente",EM_ROTA:"Em rota",APROVADA:"Aprovada",REJEITADA:"Rejeitada",ENTREGA:"Entrega",CESTA_CONCLUIDA:"Cesta concluída",DOACAO:"Doação",DOACAO_CONFIRMADA:"Doação confirmada",DOADOR:"Doador",FAMILIA:"Família",ONG:"Organização",ADMIN:"Administrador"};
 const label=(v:string)=>LABELS[v]??v.toLowerCase().replace(/_/g," ").replace(/^./,c=>c.toUpperCase());
 const initials=(n:string)=>{const p=n.trim().split(/\s+/);return((p[0]?.[0]??"")+(p[1]?.[0]??"")).toUpperCase()||"A"};
 function Action({title,onPress,disabled,secondary=false,light=false,danger=false}:{title:string;onPress:()=>void;disabled?:boolean;secondary?:boolean;light?:boolean;danger?:boolean}){
   return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({pressed})=>[styles.button,secondary&&styles.buttonSecondary,light&&styles.buttonLight,danger&&styles.buttonDanger,disabled&&{opacity:.45},pressed&&{opacity:.85}]}><Text style={[styles.buttonText,secondary&&styles.buttonTextSecondary,light&&styles.buttonTextLight,danger&&styles.buttonTextDanger]}>{title}</Text></Pressable>;
 }
-function Brand(){return <View style={styles.brand}><View style={styles.brandMark}><Text style={styles.brandMarkText}>♥</Text></View><View><Text style={styles.logo}>ANAMÃ</Text><Text style={styles.logoSub}>Cestas Solidárias</Text></View></View>}
+const LOGO=require("./assets/logo-anama.png");
+const HERO=require("./assets/hero-cestas.jpg");
+function Brand(){return <View style={styles.brand}><Image source={LOGO} style={styles.brandMark} resizeMode="contain" accessibilityIgnoresInvertColors/><View><Text style={styles.logo}>ANAMÃ</Text><Text style={styles.logoSub}>Cestas Solidárias</Text></View></View>}
 function Badge({status}:{status:string}){const tone=status==="PENDENTE"?"warn":status==="EM_ROTA"?"info":"ok";return <View style={[styles.badge,tone==="warn"&&styles.badgeWarn,tone==="info"&&styles.badgeInfo]}><Text style={[styles.badgeText,tone==="warn"&&{color:C.warning},tone==="info"&&{color:C.info}]}>{label(status)}</Text></View>}
 function Progress({value,hideLabel=false}:{value:number;hideLabel?:boolean}){const v=Math.min(100,Math.max(0,Number(value)||0));return <View style={styles.progressRow}><View style={styles.progressTrack}><View style={[styles.progressValue,{width:`${v}%`}]}/></View>{hideLabel?null:<Text style={styles.progressLabel}>{v.toFixed(0)}%</Text>}</View>}
 function Stat({label:l,value}:{label:string;value:string}){return <View style={styles.stat}><Text style={styles.muted}>{l}</Text><Text style={styles.statValue}>{value}</Text></View>}
@@ -138,11 +140,11 @@ if (
       {error?<Text style={styles.error}>{error}</Text>:null}
       {screen!=="home"?<Pressable accessibilityRole="button" onPress={()=>go("home")} style={styles.back}><Text style={styles.backText}>← Voltar ao início</Text></Pressable>:null}
       {screen==="home"?<>
-        <View style={styles.hero}><Text style={styles.heroChip}>{label(user.tipo)}</Text><Text style={styles.heroTitle}>Olá, {user.nome.split(" ")[0]}</Text><Text style={styles.heroText}>Conectando quem pode com quem precisa.</Text>
+        <ImageBackground source={HERO} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}><View style={styles.heroOverlay}/><Text style={styles.heroChip}>{label(user.tipo)}</Text><Text style={styles.heroTitle}>Olá, {user.nome.split(" ")[0]}</Text><Text style={styles.heroText}>Conectando quem pode com quem precisa.</Text>
           {user.tipo==="FAMILIA"?<Action title="Solicitar auxílio" light onPress={()=>{setQuantities({});go("aid")}}/>:null}
           {user.tipo==="ONG"?<Action title={user.ong?.statusVerificacao==="APROVADA"?"Estoque e entregas":"ONG em análise"} light disabled={user.ong?.statusVerificacao!=="APROVADA"} onPress={()=>go("inventory")}/>:null}
           {user.tipo==="ADMIN"?<Action title="Homologar ONGs" light onPress={()=>go("admin")}/>:null}
-        </View>
+        </ImageBackground>
         <View style={styles.sectionRow}><Text style={styles.sectionTitle}>Cestas em andamento</Text><Text style={styles.count}>{baskets.length}</Text></View>
         {baskets.length===0?<Empty title="Nenhuma cesta em montagem" text="Ainda não existem solicitações disponíveis neste momento."/>:null}
         {baskets.map(b=><Panel key={b.idCesta}>
@@ -181,9 +183,8 @@ const styles=StyleSheet.create({
   header:{paddingHorizontal:18,paddingVertical:12,backgroundColor:C.surface,flexDirection:"row",alignItems:"center",justifyContent:"space-between",borderBottomWidth:1,borderColor:C.line},
   headerRight:{flexDirection:"row",alignItems:"center",gap:10},
   brand:{flexDirection:"row",alignItems:"center",gap:10},
-  brandMark:{width:36,height:36,borderRadius:11,backgroundColor:C.brand,alignItems:"center",justifyContent:"center"},
-  brandMarkText:{color:"#fff",fontSize:18,fontWeight:"900",marginTop:-1},
-  logo:{fontSize:19,fontWeight:"900",color:C.brandDark,letterSpacing:.4},
+  brandMark:{width:40,height:40},
+  logo:{fontSize:19,fontWeight:"900",color:C.logo,letterSpacing:.4},
   logoSub:{fontSize:11,fontWeight:"600",color:C.muted,marginTop:-2},
   avatar:{width:36,height:36,borderRadius:18,backgroundColor:C.brand100,alignItems:"center",justifyContent:"center"},
   avatarLg:{width:56,height:56,borderRadius:28},
@@ -201,7 +202,9 @@ const styles=StyleSheet.create({
   strong:{color:C.brandDark,fontWeight:"800"},
   muted:{color:C.muted,fontSize:13},
   body:{color:C.inkSoft,fontSize:14,lineHeight:20},
-  hero:{backgroundColor:C.brandDark,borderRadius:22,padding:20,gap:8,shadowColor:C.brandDark,shadowOpacity:.25,shadowRadius:16,shadowOffset:{width:0,height:8},elevation:4},
+  hero:{backgroundColor:C.brandDark,borderRadius:22,padding:20,paddingTop:24,minHeight:190,justifyContent:"flex-end",overflow:"hidden",gap:8,shadowColor:C.brandDark,shadowOpacity:.25,shadowRadius:16,shadowOffset:{width:0,height:8},elevation:4},
+  heroImage:{borderRadius:22},
+  heroOverlay:{position:"absolute",top:0,left:0,right:0,bottom:0,backgroundColor:"rgba(13,58,31,0.78)"},
   heroChip:{alignSelf:"flex-start",color:"#fff",backgroundColor:"rgba(255,255,255,0.18)",paddingHorizontal:10,paddingVertical:4,borderRadius:999,fontSize:11,fontWeight:"800",overflow:"hidden"},
   heroChipDark:{alignSelf:"flex-start",marginTop:6,color:C.brandDark,backgroundColor:C.brand50,paddingHorizontal:10,paddingVertical:3,borderRadius:999,fontSize:11,fontWeight:"800",overflow:"hidden"},
   heroTitle:{color:"#fff",fontSize:24,fontWeight:"800",letterSpacing:-.3},
