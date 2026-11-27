@@ -9,6 +9,7 @@ import { ApiError, apiRequest } from "../services/api";
 import { useLiveUpdates } from "../hooks/useLiveUpdates";
 
 import type { Basket, BasketListResponse } from "../types/basket";
+import { statusLabel } from "../utils/labels";
 
 export function HomePage() {
   const { user } = useAuth();
@@ -82,7 +83,7 @@ export function HomePage() {
         >
           <strong>Status da ONG:</strong>
 
-          <span>{user.ong.statusVerificacao}</span>
+          <span>{statusLabel(user.ong.statusVerificacao)}</span>
         </div>
       )}
 
@@ -122,7 +123,7 @@ export function HomePage() {
       {user?.tipo === "FAMILIA" && myBaskets.length > 0 && (
         <section className="feature-card" style={{marginBottom:20}}>
           <h2>Minhas solicitações</h2>
-          {myBaskets.map(b => <p key={b.idCesta}><Link to={`/baskets/${b.idCesta}`}>Cesta #{b.idCesta} — {b.status}</Link></p>)}
+          {myBaskets.map(b => <p key={b.idCesta}><Link to={`/baskets/${b.idCesta}`}>Cesta #{b.idCesta} — {statusLabel(b.status)}</Link></p>)}
         </section>
       )}
       {!loading && !error && baskets.length > 0 && (
