@@ -6,6 +6,8 @@ import { useAuth } from "../contexts/AuthContext";
 
 import { ApiError, apiRequest } from "../services/api";
 
+import { statusLabel } from "../utils/labels";
+
 import type {
   OrganizationResponse,
   PendingOrganization,
@@ -149,7 +151,7 @@ export function AdminOrganizationsPage() {
                 <div>
                   <span>Status da conta</span>
 
-                  <strong>{organization.responsavel.status}</strong>
+                  <strong>{statusLabel(organization.responsavel.status)}</strong>
                 </div>
               </div>
 

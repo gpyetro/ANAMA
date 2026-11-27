@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { Basket } from "../../types/basket";
 
 import { ProgressBar } from "./ProgressBar";
+import { shortCode, statusLabel } from "../../utils/labels";
 
 interface BasketCardProps {
   basket: Basket;
@@ -20,12 +21,12 @@ export function BasketCard({ basket }: BasketCardProps) {
     <article className="basket-card">
       <div className="basket-card-header">
         <div>
-          <span className="basket-label">Família</span>
+          <span className="basket-label">Família {shortCode(basket.codigoFamilia)}</span>
 
-          <h2>{basket.codigoFamilia}</h2>
+          <h2>Cesta #{basket.idCesta}</h2>
         </div>
 
-        <span className="status-badge">Em montagem</span>
+        <span className="status-badge">{statusLabel(basket.status) || "Em montagem"}</span>
       </div>
 
       <div className="basket-values">

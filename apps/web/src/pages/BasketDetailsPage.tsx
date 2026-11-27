@@ -9,6 +9,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useLiveUpdates } from "../hooks/useLiveUpdates";
 
 import type { Basket, BasketResponse } from "../types/basket";
+import { shortCode, statusLabel } from "../utils/labels";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -79,14 +80,14 @@ export function BasketDetailsPage() {
 
       <div className="basket-details-header">
         <div>
-          <span className="eyebrow">Cesta #{basket.idCesta}</span>
+          <span className="eyebrow">Família {shortCode(basket.codigoFamilia)}</span>
 
-          <h1>Família {basket.codigoFamilia}</h1>
+          <h1>Cesta #{basket.idCesta}</h1>
 
           <p>Acompanhe os itens necessários e o progresso desta cesta.</p>
         </div>
 
-        <span className="status-badge">{basket.status === "EM_MONTAGEM" ? "Em montagem" : basket.status === "CONCLUIDA" ? "Concluída" : basket.status === "ENTREGUE" ? "Entregue" : basket.status}</span>
+        <span className="status-badge">{statusLabel(basket.status)}</span>
       </div>
 
       {user?.tipo === "DOADOR" &&
