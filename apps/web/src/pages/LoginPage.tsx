@@ -46,7 +46,11 @@ export function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <div className="brand-mark">ANAMÃ</div>
+        <img
+          className="auth-logo"
+          src="/logo-anama-completa.png"
+          alt="ANAMÃ — Doação de cestas básicas"
+        />
 
         <h1>Entrar</h1>
 
@@ -83,9 +87,12 @@ export function LoginPage() {
             {submitting ? "Entrando..." : "Entrar"}
           </button>
         </form>
-        <p className="auth-footer">
-          Ainda não possui uma conta? <Link to="/register">Criar conta</Link>
-        </p>
+        {import.meta.env.VITE_DEMO_MODE !== "true" && (
+  <p className="auth-footer">
+    Ainda não possui uma conta?{" "}
+    <Link to="/register">Criar conta</Link>
+  </p>
+)}
       </section>
     </main>
   );
